@@ -15,11 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserLoginService extends IService<UserLoginPO> {
 
 
-    /**
-     * 账号密码校验成功生成token
-     * @param authentication
-     * @return
-     */
-   String successfulAuthentication(Authentication authentication);
 
 }

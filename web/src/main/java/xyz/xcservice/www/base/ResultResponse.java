@@ -33,29 +33,22 @@ public class ResultResponse<T>{
      */
     private boolean success;
 
-    public ResultResponse(){ }
     public ResultResponse(String errorCode, String errorMsg) {
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
-        this.success = true;
+        this.success = false;
     }
 
     public ResultResponse(SystemResponseCodeEnum systemResponseCodeEnum) {
         this.errorCode = systemResponseCodeEnum.getCode();
         this.errorMsg = systemResponseCodeEnum.getMessage();
-        this.success = true;
+        this.success = false;
     }
 
     public ResultResponse(T data) {
         this.errorCode = SystemResponseCodeEnum.SUCCESS.getCode();
         this.errorMsg = SystemResponseCodeEnum.SUCCESS.getMessage();
         this.data = data;
-        this.success = true;
-    }
-
-    public ResultResponse(HttpStatus httpStatus){
-        this.errorCode = String.valueOf(httpStatus.value());
-        this.errorMsg = httpStatus.getReasonPhrase();
         this.success = true;
     }
 

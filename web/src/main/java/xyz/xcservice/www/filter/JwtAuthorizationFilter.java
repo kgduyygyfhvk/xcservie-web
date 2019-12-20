@@ -34,12 +34,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
-        //获取请求路径
-        String requestURI = request.getRequestURI();
         //获取token头
         String tokenHeader = request.getHeader(JwtTokenUtil.TOKEN_HEADER);
         //判断请求头是否存在Authorization和判断请求头是否存在Bearer或者为登录路径直接放行
-        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFFIEX)||JwtAuthenticationFilter.loginUrl.equals(requestURI)) {
+        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFFIEX)) {
             //不给与权限放行，Security会拦截没授权的请求
             chain.doFilter(request, response);
             return;

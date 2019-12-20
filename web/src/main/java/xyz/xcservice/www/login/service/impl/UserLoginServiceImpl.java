@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import xyz.xcservice.www.utils.JwtTokenUtil;
 import xyz.xcservice.www.utils.ResponseUtil;
 
+import javax.annotation.Resource;
 import java.util.Set;
 
 /**
@@ -26,9 +27,5 @@ import java.util.Set;
 @Service
 public class UserLoginServiceImpl extends ServiceImpl<UserLoginMapper, UserLoginPO> implements UserLoginService {
 
-    @Override
-    public String successfulAuthentication(Authentication authentication) {
-        String token = JwtTokenUtil.createToken((String) authentication.getPrincipal(),(Set)authentication.getAuthorities());
-        return token;
-    }
+
 }
