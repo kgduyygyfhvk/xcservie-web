@@ -3,7 +3,6 @@ package xyz.xcservice.www.exception;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import xyz.xcservice.www.base.ResultResponse;
 import xyz.xcservice.www.enums.SystemResponseCodeEnum;
 
 /**
@@ -16,7 +15,7 @@ import xyz.xcservice.www.enums.SystemResponseCodeEnum;
 @EqualsAndHashCode(callSuper = true)
 public class XcServiceException extends RuntimeException{
 
-    private ResultResponse resultResponse;
+    private SystemResponseCodeEnum systemResponseCodeEnum;
 
     public XcServiceException(String msg) {
         super(msg);
@@ -27,8 +26,8 @@ public class XcServiceException extends RuntimeException{
     }
 
     public XcServiceException(SystemResponseCodeEnum systemResponseCodeEnum) {
-        resultResponse = new ResultResponse(systemResponseCodeEnum);
-        log.error(resultResponse.toString());
+        super(systemResponseCodeEnum.getMessage());
+        this.systemResponseCodeEnum = systemResponseCodeEnum;
     }
 
 }

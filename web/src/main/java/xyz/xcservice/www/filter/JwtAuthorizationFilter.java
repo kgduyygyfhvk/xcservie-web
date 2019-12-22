@@ -3,6 +3,8 @@ package xyz.xcservice.www.filter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import xyz.xcservice.www.utils.JwtTokenUtil;
@@ -12,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * @author wuwenchao
@@ -19,7 +22,6 @@ import java.io.IOException;
  */
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-
 
     /**
      * 做过滤
@@ -37,13 +39,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         //获取token头
         String tokenHeader = request.getHeader(JwtTokenUtil.TOKEN_HEADER);
         //判断请求头是否存在Authorization和判断请求头是否存在Bearer或者为登录路径直接放行
-        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFFIEX)) {
+        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
             //不给与权限放行，Security会拦截没授权的请求
             chain.doFilter(request, response);
             return;
         }
         //给与权限
-        SecurityContextHolder.getContext().setAuthentication(this.getAuthentication(tokenHeader));
+        Authentication authentication = getAuthentication(tokenHeader);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
 
@@ -53,16 +56,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      *
      * @param tokenHeader
      * @return
-     *
      */
     private UsernamePasswordAuthenticationToken getAuthentication(String tokenHeader) {
-        String token = tokenHeader.replace(JwtTokenUtil.TOKEN_PREFFIEX, "").trim();
+        String token = tokenHeader.replace(JwtTokenUtil.TOKEN_PREFIX, "").trim();
         //获取用户名
         String loginCode = JwtTokenUtil.getUsername(token);
         boolean isExpire = JwtTokenUtil.isExpiration(token);
-//        List<SimpleGrantedAuthority> authorityList = JwtTokenUtil.getUserRolesByToken(token);
-        if (StringUtils.isNotBlank(loginCode)&&!isExpire) {
-            return new UsernamePasswordAuthenticationToken(loginCode, null, null);
+        Set<SimpleGrantedAuthority> authoritySet = JwtTokenUtil.getUserRolesByToken(token);
+        if (StringUtils.isNotBlank(loginCode) && !isExpire) {
+            return new UsernamePasswordAuthenticationToken(loginCode, null, authoritySet);
         }
         return null;
     }

@@ -4,8 +4,9 @@ import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.Objects;
 
 /**
  * @author wuwenchao
@@ -21,16 +22,23 @@ public class ResponseUtil {
      * @param jsonStr
      */
     public static void writer(HttpServletResponse response, String jsonStr) {
-        PrintWriter writer = null;
+        BufferedOutputStream bufferedOutputStream = null;
         try {
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json; charset=utf-8");
-            writer = response.getWriter();
-            writer.write(jsonStr);
+            bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+            bufferedOutputStream.write(jsonStr.getBytes());
         } catch (IOException e) {
-            log.info("系统异常{}", Throwables.getStackTraceAsString(e));
+            log.error(Throwables.getStackTraceAsString(e));
         } finally {
-            writer.close();
+            if (Objects.nonNull(bufferedOutputStream)) {
+                try {
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                } catch (IOException e) {
+                    log.error(Throwables.getStackTraceAsString(e));
+                }
+            }
         }
     }
 }

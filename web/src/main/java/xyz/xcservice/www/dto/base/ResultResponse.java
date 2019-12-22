@@ -1,7 +1,6 @@
-package xyz.xcservice.www.base;
+package xyz.xcservice.www.dto.base;
 
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 import xyz.xcservice.www.enums.SystemResponseCodeEnum;
 
 /**
@@ -32,6 +31,12 @@ public class ResultResponse<T>{
      * 判断接口是否异常
      */
     private boolean success;
+
+    public ResultResponse() {
+        this.errorCode = SystemResponseCodeEnum.SUCCESS.getCode();
+        this.errorMsg = SystemResponseCodeEnum.SUCCESS.getCode();
+        this.success = true;
+    }
 
     public ResultResponse(String errorCode, String errorMsg) {
         this.errorCode = errorCode;

@@ -7,17 +7,19 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.hibernate.validator.internal.engine.ValidatorImpl;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletWebRequest;
-import xyz.xcservice.www.base.ResultRequest;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import xyz.xcservice.www.dto.base.ResultRequest;
+import xyz.xcservice.www.dto.base.ResultResponse;
 import xyz.xcservice.www.exception.XcServiceException;
+import xyz.xcservice.www.utils.BeanValidatorUtil;
 import xyz.xcservice.www.utils.ResponseUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Validator;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -37,7 +39,8 @@ public class LogBackTraceLogIdConfig {
     public static final String dstTraceId = "dstTraceId";
 
     @Resource
-    private ValidatorImpl validator;
+    private Validator validator;
+
 
     /**
      * 定义切点Pointcut
@@ -46,7 +49,7 @@ public class LogBackTraceLogIdConfig {
      * 第三个*号：表示方法名，*号表示所有的方法
      * 后面括弧里面表示方法的参数，两个句点表示任何参数
      */
-    @Pointcut("execution(*  xyz.xcservice.www.controller.*.*(..))")
+    @Pointcut("execution(*  xyz.xcservice.www.flow.controller.*.*(..))")
     public void executionService() {
     }
 
@@ -70,7 +73,10 @@ public class LogBackTraceLogIdConfig {
                 MDC.put(LogBackTraceLogIdConfig.traceLogId, resultRequest.getTraceLogId());
             }
         }
-        log.info("请求路径[{}][{}],请求参数：{}", className, methodName, Arrays.toString(joinPoint.getArgs()));
+        log.info("请求路径[{}][{}]:\n请求参数：{}", className, methodName, Arrays.toString(joinPoint.getArgs()));
+        if(ArrayUtils.isNotEmpty(objects)) {
+            BeanValidatorUtil.validate(validator, objects[0]);
+        }
     }
 
     /**
@@ -85,15 +91,15 @@ public class LogBackTraceLogIdConfig {
         //获取方法名
         String methodName = joinPoint.getSignature().getName();
         //获取参数数组
-        log.info("请求路径[{}][{}],响应参数：{}", className, methodName, returnValue);
+        log.info("请求路径[{}][{}]:\n响应参数：{}", className, methodName, returnValue);
         // 处理完请求，返回内容
         MDC.clear();
     }
 
     @AfterThrowing(pointcut = "executionService()", throwing = "exception")
     public void AfterThrowing(XcServiceException exception) {
-        HttpServletResponse response = ((ServletWebRequest) RequestContextHolder.getRequestAttributes()).getResponse();
-        String jsonStr = JSONObject.toJSONString(exception.getResultResponse(), SerializerFeature.WriteMapNullValue);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        String jsonStr = JSONObject.toJSONString(new ResultResponse<>(exception.getSystemResponseCodeEnum()), SerializerFeature.WriteMapNullValue);
         ResponseUtil.writer(response, jsonStr);
     }
 

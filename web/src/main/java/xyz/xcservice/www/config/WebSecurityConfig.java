@@ -1,6 +1,5 @@
 package xyz.xcservice.www.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,9 +14,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import xyz.xcservice.www.filter.JwtAuthorizationFilter;
-import xyz.xcservice.www.login.manager.LoginAuthenticationManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author wuwenchao
@@ -28,8 +28,20 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private LoginAuthenticationManager loginAuthenticationManager;
+
+    /**
+     * 不拦截swagger路径
+     */
+    public static final List<String> IGNORE_PATHS;
+    static {
+        IGNORE_PATHS = new ArrayList<>();
+        IGNORE_PATHS.add("/v2/api-docs");
+        IGNORE_PATHS.add("/swagger-ui.html");
+        IGNORE_PATHS.add("/swagger-resources/**");
+        IGNORE_PATHS.add("/webjars/**");
+    }
+
+
     /**
      * 设置防火墙
      *
@@ -66,9 +78,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 //白名单路径
-                .antMatchers("/login,/register").permitAll()
+                .antMatchers("/login","/register","/swagger","/**.html").permitAll()
+                .antMatchers(WebSecurityConfig.IGNORE_PATHS.toArray(new
+                        String[WebSecurityConfig.IGNORE_PATHS.size()])).permitAll()
                 //其他都要鉴权
-                .antMatchers("/**").hasRole("USER")
+                .antMatchers("/**").hasAnyAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
                 //鉴权过滤

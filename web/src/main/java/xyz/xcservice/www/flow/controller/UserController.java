@@ -1,4 +1,4 @@
-package xyz.xcservice.www.login.controller;
+package xyz.xcservice.www.flow.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -9,21 +9,23 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import springfox.documentation.annotations.ApiIgnore;
-import xyz.xcservice.www.base.ResultResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import xyz.xcservice.www.dto.UserDetailDTO;
-import xyz.xcservice.www.dto.UserLoginDetails;
+import xyz.xcservice.www.dto.base.ResultResponse;
 import xyz.xcservice.www.enums.SystemResponseCodeEnum;
-import xyz.xcservice.www.login.entity.UserAuthoritiesPO;
-import xyz.xcservice.www.login.entity.UserLoginPO;
-import xyz.xcservice.www.login.service.UserAuthoritiesService;
-import xyz.xcservice.www.login.service.UserLoginService;
+import xyz.xcservice.www.exception.XcServiceException;
+import xyz.xcservice.www.flow.entity.UserAuthoritiesPO;
+import xyz.xcservice.www.flow.entity.UserLoginPO;
+import xyz.xcservice.www.flow.service.UserAuthoritiesService;
+import xyz.xcservice.www.flow.service.UserLoginService;
 import xyz.xcservice.www.utils.JwtTokenUtil;
 
 import javax.annotation.Resource;
-import java.util.Set;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -53,15 +55,14 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    @ApiIgnore
-    @ApiOperation(value = "login", notes = "login", response = ResultResponse.class)
+    @ApiOperation(value = "登录接口",  response = ResultResponse.class)
     public ResultResponse<String> login(@RequestBody UserDetailDTO userDetailDTO) {
         log.info("开始验证登录账号:[{}]", userDetailDTO.getLoginCode());
         //开始验证账号密码
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDetailDTO.getLoginCode(), userDetailDTO.getPassword())
         );
-        String token = JwtTokenUtil.createToken((String) authentication.getPrincipal(), (Set) authentication.getAuthorities());
+        String token = JwtTokenUtil.TOKEN_PREFIX + JwtTokenUtil.createToken((String) authentication.getPrincipal(), (List) authentication.getAuthorities());
         //生成token
         log.info("验证成功:[{}]", userDetailDTO.getLoginCode());
         return new ResultResponse<>(token);
@@ -69,9 +70,14 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseBody
-    @ApiIgnore
-    @ApiOperation(value = "register", notes = "register", response = ResultResponse.class)
+    @ApiOperation(value = "注册接口",response = ResultResponse.class)
     public ResultResponse<Boolean> register(@RequestBody UserDetailDTO userDetailDTO) {
+        QueryWrapper<UserLoginPO> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("login_code", userDetailDTO.getLoginCode());
+        UserLoginPO userLoginPO1 = userLoginService.getOne(queryWrapper);
+        if (Objects.nonNull(userLoginPO1)) {
+            throw new XcServiceException(SystemResponseCodeEnum.LOGIN_CODE_ALREADY_EXIST);
+        }
         UserLoginPO userLoginPO = new UserLoginPO();
         userLoginPO.setLoginCode(userDetailDTO.getLoginCode());
         userLoginPO.setPassword(bCryptPasswordEncoder.encode(userDetailDTO.getPassword()));
@@ -79,16 +85,13 @@ public class UserController {
         if (isSuccess) {
             log.info("[{}]用户登录表创建成功", userDetailDTO.getLoginCode());
         }
-
+        userLoginPO1 = userLoginService.getOne(queryWrapper);
         //查询
-        QueryWrapper<UserLoginPO> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("login_code", userLoginPO.getLoginCode());
-        UserLoginPO userLoginPO1 = userLoginService.getOne(queryWrapper);
         UserAuthoritiesPO userAuthoritiesPO = new UserAuthoritiesPO();
         userAuthoritiesPO.setUserLoginId(userLoginPO1.getId());
         userAuthoritiesPO.setAuthority("USER");
         userAuthoritiesService.save(userAuthoritiesPO);
-        return new ResultResponse<>(SystemResponseCodeEnum.SUCCESS);
+        return new ResultResponse(true);
     }
 }
 

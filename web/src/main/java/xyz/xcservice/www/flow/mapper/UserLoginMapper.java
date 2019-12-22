@@ -1,6 +1,6 @@
-package xyz.xcservice.www.login.mapper;
+package xyz.xcservice.www.flow.mapper;
 
-import xyz.xcservice.www.login.entity.UserLoginPO;
+import xyz.xcservice.www.flow.entity.UserLoginPO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

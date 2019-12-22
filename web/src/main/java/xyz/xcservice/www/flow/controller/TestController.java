@@ -1,4 +1,4 @@
-package xyz.xcservice.www.controller;
+package xyz.xcservice.www.flow.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

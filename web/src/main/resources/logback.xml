@@ -65,23 +65,26 @@
     <logger name="java.sql.Connection" level="DEBUG"/>
     <logger name="java.sql.Statement" level="DEBUG"/>
     <logger name="java.sql.PreparedStatement" level="DEBUG"/>
-
+    <logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
+    <logger name="org.apache.catalina.util.LifecycleBase" level="ERROR"/>
+    <logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+    <logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
+    <logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
+    <logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
+    <logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
+    <!--日志异步到数据库 -->
+    <appender name="MYSQL" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+                <driverClass>com.mysql.cj.jdbc.Driver</driverClass>
+                <url><![CDATA[jdbc:mysql://127.0.0.1/xcservice?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=utf-8]]></url>
+                <user>root</user>
+                <password>123456</password>
+        </connectionSource>
+    </appender>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
+        <appender-ref ref="MYSQL" />
     </root>
-    <!--日志异步到数据库 -->
-    <!--<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
-        &lt;!&ndash;日志异步到数据库 &ndash;&gt;
-        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
-            &lt;!&ndash;连接池 &ndash;&gt;
-            <dataSource class="com.alibaba.druid.pool.DruidDataSource">
-                <driverClass>com.mysql.cj.jdbc.Driver</driverClass>
-                <url>jdbc:mysql://127.0.0.1/test?serverTimezone=UTC</url>
-                <user>root</user>
-                <password>123456</password>
-            </dataSource>
-        </connectionSource>
-    </appender>-->
 </configuration>

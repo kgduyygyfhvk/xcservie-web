@@ -2,7 +2,7 @@ package xyz.xcservice.www.dto;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import xyz.xcservice.www.login.entity.UserLoginPO;
+import xyz.xcservice.www.flow.entity.UserLoginPO;
 
 import java.util.Collection;
 

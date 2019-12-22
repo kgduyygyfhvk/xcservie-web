@@ -3,12 +3,10 @@ package xyz.xcservice.www.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,16 +15,16 @@ import java.util.stream.Collectors;
  */
 public class JwtTokenUtil {
     public static final String TOKEN_HEADER = "Authorization";
-    public static final String TOKEN_PREFFIEX = "Bearer ";
+    public static final String TOKEN_PREFIX = "Bearer ";
     private static final String SECRET = "cesauthdemo";
     private static final String ISS = "cesiss";
     private static final String JWT = "jwt";
     private static final String TYP = "typ";
     private static final String ROLE = "role";
     /**
-     * 过期时间1个小时
+     * 过期时间1个小时,毫秒
      */
-    private static long EXPIRATION = 3600L;
+    private static long EXPIRATION = 3600L * 1000;
 
     /**
      * 创建token
@@ -34,8 +32,7 @@ public class JwtTokenUtil {
      * @param loginCode
      * @return
      */
-    public static String createToken(String loginCode, Set<SimpleGrantedAuthority> roleSet) {
-        long expiration = EXPIRATION;
+    public static String createToken(String loginCode, List<SimpleGrantedAuthority> roleSet) {
         return Jwts.builder()
                 .setHeaderParam(JwtTokenUtil.TYP, JwtTokenUtil.JWT)
                 .signWith(SignatureAlgorithm.HS256, SECRET)
@@ -43,7 +40,7 @@ public class JwtTokenUtil {
                 .setIssuer(ISS)
                 .setSubject(loginCode)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .compact();
     }
 
@@ -84,11 +81,15 @@ public class JwtTokenUtil {
     /**
      * 获取用户所有角色
      */
-    public static List<SimpleGrantedAuthority> getUserRolesByToken(String token) {
-        String role = (String)getTokenBody(token).get(JwtTokenUtil.ROLE);
+    public static Set<SimpleGrantedAuthority> getUserRolesByToken(String token) {
+
+        String role = (String) getTokenBody(token).get(JwtTokenUtil.ROLE);
+        if(StringUtils.isBlank(role)){
+            return null;
+        }
         return Arrays.stream(role.split(","))
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
 }

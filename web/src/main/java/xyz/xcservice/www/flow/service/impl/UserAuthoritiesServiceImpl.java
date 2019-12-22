@@ -1,8 +1,8 @@
-package xyz.xcservice.www.login.service.impl;
+package xyz.xcservice.www.flow.service.impl;
 
-import xyz.xcservice.www.login.entity.UserAuthoritiesPO;
-import xyz.xcservice.www.login.mapper.UserAuthoritiesMapper;
-import xyz.xcservice.www.login.service.UserAuthoritiesService;
+import xyz.xcservice.www.flow.entity.UserAuthoritiesPO;
+import xyz.xcservice.www.flow.mapper.UserAuthoritiesMapper;
+import xyz.xcservice.www.flow.service.UserAuthoritiesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

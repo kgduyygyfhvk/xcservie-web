@@ -1,7 +1,6 @@
-package xyz.xcservice.www.login.service;
+package xyz.xcservice.www.flow.service;
 
-import org.springframework.security.core.Authentication;
-import xyz.xcservice.www.login.entity.UserLoginPO;
+import xyz.xcservice.www.flow.entity.UserLoginPO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

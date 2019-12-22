@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="xyz.xcservice.www.login.mapper.UserAuthoritiesMapper">
+<mapper namespace="xyz.xcservice.www.flow.mapper.UserAuthoritiesMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="xyz.xcservice.www.login.entity.UserAuthoritiesPO">
+    <resultMap id="BaseResultMap" type="xyz.xcservice.www.flow.entity.UserAuthoritiesPO">
     <result column="id" property="id" />
         <result column="user_login_id" property="userLoginId" />
         <result column="authority" property="authority" />

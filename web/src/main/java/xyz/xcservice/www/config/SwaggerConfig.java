@@ -22,17 +22,17 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("swagger2的测试类")
+                .groupName("接口文档")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("xyz.xcservice.www.controller"))
+                .apis(RequestHandlerSelectors.basePackage("xyz.xcservice.www.flow.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("springBoot整合swagger")
-                .description("项目所有API接口列表，http://localhost/swagger")
+                .title("接口文档")
+                .description("面向前端接口文档")
                 .version("1.0")
                 .build();
     }

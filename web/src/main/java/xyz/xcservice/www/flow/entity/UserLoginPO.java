@@ -1,4 +1,4 @@
-package xyz.xcservice.www.login.entity;
+package xyz.xcservice.www.flow.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
