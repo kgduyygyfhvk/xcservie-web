@@ -23,6 +23,8 @@ import java.util.Set;
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    public static  final  String REQUEST_URL = "/login";
+
     /**
      * 做过滤
      *
@@ -38,8 +40,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws IOException, ServletException {
         //获取token头
         String tokenHeader = request.getHeader(JwtTokenUtil.TOKEN_HEADER);
-        //判断请求头是否存在Authorization和判断请求头是否存在Bearer或者为登录路径直接放行
-        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
+        String requestUrl = request.getRequestURI();
+        //判断请求头是否存在AUTHORIZATION和判断请求头是否存在BEARER或者为登录路径直接放行
+        if (StringUtils.isBlank(tokenHeader) || !tokenHeader.startsWith(JwtTokenUtil.TOKEN_PREFIX)||REQUEST_URL.equals(requestUrl)) {
             //不给与权限放行，Security会拦截没授权的请求
             chain.doFilter(request, response);
             return;

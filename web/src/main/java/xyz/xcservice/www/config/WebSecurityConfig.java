@@ -78,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 //白名单路径
-                .antMatchers("/login","/register","/swagger","/**.html").permitAll()
+                .antMatchers("/login","/register","/swagger","/page").permitAll()
                 .antMatchers(WebSecurityConfig.IGNORE_PATHS.toArray(new
                         String[WebSecurityConfig.IGNORE_PATHS.size()])).permitAll()
                 //其他都要鉴权

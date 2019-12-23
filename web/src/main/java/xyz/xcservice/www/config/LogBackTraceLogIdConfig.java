@@ -73,7 +73,7 @@ public class LogBackTraceLogIdConfig {
                 MDC.put(LogBackTraceLogIdConfig.traceLogId, resultRequest.getTraceLogId());
             }
         }
-        log.info("请求路径[{}][{}]:\n请求参数：{}", className, methodName, Arrays.toString(joinPoint.getArgs()));
+        log.info("请求路径[{}.{}]:请求参数：{}", className, methodName, Arrays.toString(joinPoint.getArgs()));
         if(ArrayUtils.isNotEmpty(objects)) {
             BeanValidatorUtil.validate(validator, objects[0]);
         }
@@ -91,7 +91,7 @@ public class LogBackTraceLogIdConfig {
         //获取方法名
         String methodName = joinPoint.getSignature().getName();
         //获取参数数组
-        log.info("请求路径[{}][{}]:\n响应参数：{}", className, methodName, returnValue);
+        log.info("请求路径[{}.{}]:响应参数：{}", className, methodName, returnValue);
         // 处理完请求，返回内容
         MDC.clear();
     }

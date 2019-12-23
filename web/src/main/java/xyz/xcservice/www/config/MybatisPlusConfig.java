@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * MybatisPlus分页配置
+ * MybatisPlus配置
  * @author wuwenchao
  * @date 2019/10/28
  */
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @MapperScan("xyz.xcservice.www.*.mapper")
 public class MybatisPlusConfig {
+
 
     @Bean
     public PaginationInterceptor paginationInterceptor() {
